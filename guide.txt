@@ -1,0 +1,110 @@
+Crie um marketplace completo de cartas Pokémon com chat em tempo real e pagamento interno seguro usando Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Supabase e TanStack Query.
+
+## ESTRUTURA DO PROJETO (obrigatória)
+app/
+├── (auth)/                    # Grupo de rotas públicas
+│   ├── login/page.tsx
+│   └── register/page.tsx
+├── (dashboard)/               # Grupo com layout protegido
+│   ├── layout.tsx             # Sidebar + auth check
+│   ├── marketplace/
+│   │   ├── page.tsx           # Listagem de cartas
+│   │   └── [id]/page.tsx      # Detalhe da carta
+│   ├── trades/
+│   │   ├── page.tsx           # Minhas negociações
+│   │   └── [id]/page.tsx      # Chat + detalhes da trade
+│   ├── wallet/
+│   │   └── page.tsx           # Saldo e extrato
+│   └── upload/
+│       └── page.tsx           # Anunciar nova carta
+├── api/                       # Route handlers (webhooks)
+components/
+├── ui/                        # shadcn components
+├── cards/                     # CardGrid, CardCard, CardDetail
+├── chat/                      # ChatBox, MessageBubble, OfferButton
+├── trades/                    # TradeStatus, TradeActions
+└── wallet/                    # BalanceDisplay, TransactionList
+lib/
+├── supabase/
+│   ├── client.ts              # Cliente browser
+│   ├── server.ts              # Cliente server (cookies)
+│   └── realtime.ts            # Hooks de subscription
+├── queries/                   # TanStack Query hooks
+│   ├── cards.ts
+│   ├── trades.ts
+│   └── wallet.ts
+└── utils/
+types/
+└── database.ts                # Gerado do Supabase
+supabase/
+├── functions/                 # Edge Functions
+│   ├── create-trade/index.ts
+│   ├── process-payment/index.ts
+│   ├── release-payment/index.ts
+│   └── verify-card/index.ts
+└── migrations/                # SQL do schema
+└── 001_initial_schema.sql
+
+
+## REQUISITOS FUNCIONAIS (por ordem de prioridade)
+
+### 1. AUTENTICAÇÃO E PERFIS
+- Login/registro com email/senha via Supabase Auth
+- Perfil com username, avatar e reputation_scoreore (0-100)
+- Middleware de proteção de rotas
+
+### 2. MARKETPLACE DE CARTAS
+- Listagem paginada com filtros (nome, set, condition, preço)
+- Cards mostram: imagem, nome, preço, condição, reputação do vendedor
+- Apenas cartas com status='available' e verified_by_admin=true aparecem
+- Upload de cartas com múltiplas fotos (frente/verso/detalhes)
+
+### 3. SISTEMA DE TRADES COM CHAT EM TEMPO REAL
+- Iniciar trade a partir de uma carta (bloqueia carta para outros)
+- Chat em tempo real usando Supabase Realtime subscriptions
+- Tipos de mensagem: texto, oferta de preço, sistema (notificações automáticas)
+- Status da trade: negotiating → payment_pending → payment_held → shipped → delivered → completed
+
+### 4. SISTEMA DE PAGAMENTO INTERNO (ANTI-GOLPE)
+- Wallet com saldo em centavos (evitar float)
+- Escrow (garantia): dinheiro fica retido até confirmação de recebimento
+- Edge Functions para processamento seguro (nunca no client)
+- Transações: deposit, withdrawal, payment, receipt, escrow_hold, escrow_release
+
+### 5. PROTEÇÕES ANTI-GOLPE
+- Reputação mínima para vender (>50)
+- Prazos automáticos: 24h para pagar, 72h para enviar, 72h para confirmar recebimento
+- Sistema de disputa com status 'disputed'
+- Verificação manual de cartas por admin (verified_by_admin)
+
+EDGE FUNCTIONS (implementar todas)
+create-trade: Valida carta disponível, reputação do vendedor, cria trade, bloqueia carta
+process-payment: Verifica saldo, move para escrow, atualiza status
+release-payment: Libera para vendedor ou abre disputa
+verify-card: (Futuro) Análise de imagem por IA ou manual
+
+### COMPONENTES CHAVE (detalhados)
+// Props: tradeId, currentUserId, opponent
+// Features:
+// - Lista mensagens com scroll infinito
+// - Input com envio otimista (aparece imediatamente)
+// - Botão "Fazer Oferta" que insere mensagem tipo='offer'
+// - Realtime subscription em 'postgres_changes' na tabela messages
+// - Indicador "digitando..." (opcional)
+// - Scroll automático para última mensagem
+
+### TradeActions
+// Mostra botões baseado no status atual e papel do usuário (buyer/seller)
+// negotiating: "Fazer Oferta", "Aceitar Preço", "Cancelar"
+// payment_pending: "Pagar Agora" (chama Edge Function)
+// payment_held: "Marcar como Enviado" (seller), "Ver Detalhes" (buyer)
+// shipped: "Confirmar Recebimento" (buyer) ou "Abrir Disputa"
+// delivered: Aguardando confirmação automática em 72h
+
+### CardUpload
+
+// Dropzone para múltiplas imagens
+// Preview antes de enviar
+// Compressão client-side (sharp ou browser-image-compression)
+// Upload para Supabase Storage bucket 'card-images'
+// Salvar array de URLs no registro da carta

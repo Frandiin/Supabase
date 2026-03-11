@@ -1,0 +1,203 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 213 31% 91%;
+    --card: 222 47% 9%;
+    --card-foreground: 213 31% 91%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 47 100% 50%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 217 91% 35%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 91% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 47 100% 50%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background: radial-gradient(ellipse at top, hsl(217 91% 12%) 0%, hsl(222 47% 6%) 60%);
+    min-height: 100vh;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
+}
+
+@layer components {
+  .pokemon-card {
+    @apply relative overflow-hidden rounded-xl border border-border/50 bg-card;
+    background: linear-gradient(135deg, hsl(222 47% 10%) 0%, hsl(222 47% 8%) 100%);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+  }
+  
+  .pokemon-card:hover {
+    border-color: hsl(47 100% 50% / 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 215, 0, 0.15);
+    transform: translateY(-4px);
+  }
+
+  .pokemon-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 55%, transparent 60%);
+    pointer-events: none;
+  }
+  
+  .glass-panel {
+    @apply rounded-xl border border-white/10 backdrop-blur-md;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-200;
+    background: linear-gradient(135deg, hsl(47 100% 50%), hsl(40 100% 45%));
+    color: hsl(222 47% 6%);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    transform: translateY(-1px);
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold border border-border/50 bg-card text-foreground transition-all duration-200;
+  }
+  
+  .btn-secondary:hover {
+    @apply border-primary/30 bg-accent/10;
+  }
+  
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold bg-destructive/20 text-destructive border border-destructive/30 transition-all duration-200;
+  }
+  
+  .btn-danger:hover {
+    @apply bg-destructive/30;
+  }
+  
+  .input-field {
+    @apply w-full rounded-lg border border-border/50 bg-muted/30 px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground transition-all duration-200;
+    outline: none;
+  }
+  
+  .input-field:focus {
+    @apply border-primary/50;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
+  }
+  
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  
+  .badge-yellow {
+    @apply badge bg-yellow-400/20 text-yellow-400 border border-yellow-400/30;
+  }
+  
+  .badge-green {
+    @apply badge bg-emerald-400/20 text-emerald-400 border border-emerald-400/30;
+  }
+  
+  .badge-blue {
+    @apply badge bg-blue-400/20 text-blue-400 border border-blue-400/30;
+  }
+  
+  .badge-red {
+    @apply badge bg-red-400/20 text-red-400 border border-red-400/30;
+  }
+  
+  .badge-purple {
+    @apply badge bg-purple-400/20 text-purple-400 border border-purple-400/30;
+  }
+  
+  .shimmer {
+    @apply relative overflow-hidden;
+    background: linear-gradient(90deg, hsl(222 47% 9%) 25%, hsl(222 47% 13%) 50%, hsl(222 47% 9%) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  .sidebar-link {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground hover:bg-muted/50;
+  }
+  
+  .sidebar-link.active {
+    @apply text-foreground bg-primary/10 border border-primary/20;
+    color: hsl(var(--primary));
+  }
+
+  .message-bubble-mine {
+    @apply ml-auto max-w-xs rounded-2xl rounded-br-sm px-4 py-2.5 text-sm;
+    background: linear-gradient(135deg, hsl(47 100% 50%), hsl(40 100% 45%));
+    color: hsl(222 47% 6%);
+  }
+  
+  .message-bubble-other {
+    @apply mr-auto max-w-xs rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm bg-muted/50 text-foreground border border-border/30;
+  }
+  
+  .offer-bubble {
+    @apply mx-auto max-w-sm rounded-2xl border border-yellow-400/40 px-5 py-3 text-center;
+    background: rgba(255, 215, 0, 0.08);
+  }
+  
+  .system-message {
+    @apply mx-auto max-w-sm text-center text-xs text-muted-foreground py-1;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(47 100% 60%), hsl(40 100% 50%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-gradient-blue {
+    background: linear-gradient(135deg, hsl(210 100% 70%), hsl(220 100% 60%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
